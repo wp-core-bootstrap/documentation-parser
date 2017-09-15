@@ -14,11 +14,8 @@
 namespace WPCoreBootstrap\DocumentationParser\Visitor;
 
 use PhpParser\Node;
-use PhpParser\Node\Expr;
-use PhpParser\NodeVisitorAbstract;
 use WPCoreBootstrap\DocumentationParser\Entry\Location;
 use WPCoreBootstrap\DocumentationParser\Entry;
-use WPCoreBootstrap\DocumentationParser\Node\File;
 
 /**
  * Class ConstantCollector.
@@ -28,17 +25,8 @@ use WPCoreBootstrap\DocumentationParser\Node\File;
  * @package WPCoreBootstrap\DocumentationParser\Visitor
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-final class ConstantCollector extends NodeVisitorAbstract
+final class ConstantCollector extends BaseVisitor
 {
-    /**
-     * Name of the file.
-     *
-     * @since 0.1.0
-     *
-     * @var string
-     */
-    private $file;
-
     /**
      * Collected constants.
      *
@@ -61,10 +49,9 @@ final class ConstantCollector extends NodeVisitorAbstract
      */
     public function beforeTraverse(array $nodes)
     {
-        $this->file      = '<unknown>';
         $this->constants = [];
 
-        return null;
+        return parent::beforeTraverse($nodes);
     }
 
     /**
@@ -86,17 +73,11 @@ final class ConstantCollector extends NodeVisitorAbstract
      */
     public function enterNode(Node $node)
     {
-        if ($node instanceof File) {
-            $this->file = $node;
-            return null;
+        if ($result = $this->matchesFunction($node, 'define', 'name', 'value')) {
+            $this->addDefineConstantEntry($node, $this->getString($result['name']->value), $result['value']->value);
         }
 
-        if ($node instanceof Expr\FuncCall
-            && $this->isNamed($node, 'define')) {
-            $this->addDefineConstantEntry($node);
-        }
-
-        return null;
+        return parent::enterNode($node);
     }
 
     /**
@@ -112,45 +93,23 @@ final class ConstantCollector extends NodeVisitorAbstract
     }
 
     /**
-     * Check whether the node has a specific name.
+     * Add DefineConstant entry.
      *
      * @since 0.1.0
      *
-     * @param Node   $node Node to check.
-     * @param string $name Name that needs to be matched.
-     *
-     * @return bool Whether the node has the specified name.
+     * @param Node   $node  Node to parse.
+     * @param string $name  Name of the constant.
+     * @param Node   $value Value node.
      */
-    private function isNamed(Node $node, string $name): bool
+    private function addDefineConstantEntry(Node $node, string $name, Node $value)
     {
-        return isset($node->name->parts)
-            && (string)$node->name === $name;
-    }
-
-    /**
-     * Add DefineConstantEntry.
-     *
-     * @since 0.1.0
-     *
-     * @param Node $node Node to parse.
-     */
-    private function addDefineConstantEntry(Node $node)
-    {
-        $name = $node->args[0]->value->value ?? null;
-
-        if (null === $name) {
-            return;
-        }
-
-        $value = $node->args[1]->value ?? null;
-
         $constant = array_key_exists($name, $this->constants)
             ? $this->constants[$name]
             : new Entry\DefineConstant($name);
 
         $constant = $constant->withLocation(
             new Location\Declaration(
-                (string)$this->file->name,
+                $this->file,
                 (int)$node->getAttribute('startLine', '-1'),
                 (int)$node->getAttribute('endLine', '-1'),
                 $value
