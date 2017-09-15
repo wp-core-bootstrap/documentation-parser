@@ -11,11 +11,12 @@
  * @copyright 2017 Alain Schlesser, WordPress Core Bootstrap
  */
 
-namespace WPCoreBootstrap\DocumentationParser;
+namespace WPCoreBootstrap\DocumentationParser\Parser;
 
 use PhpParser\Node;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
+use WPCoreBootstrap\DocumentationParser\Parser;
 
 /**
  * Class CachedParser.

@@ -50,12 +50,12 @@ final class RoboFile extends Tasks
 
         $start = getrusage();
 
-        $parser = new FilesystemParser(
+        $parser = new Parser\FilesystemParser(
             self::SOURCE_ROOT,
-            new CachedParser(
+            new Parser\CachedParser(
                 self::SOURCE_ROOT,
                 self::CACHE_ROOT,
-                new FileBasedParser(self::SOURCE_ROOT)
+                new Parser\FileBasedParser(self::SOURCE_ROOT)
             ),
             $this->output()
         );

@@ -11,7 +11,7 @@
  * @copyright 2017 Alain Schlesser, WordPress Core Bootstrap
  */
 
-namespace WPCoreBootstrap\DocumentationParser;
+namespace WPCoreBootstrap\DocumentationParser\Parser;
 
 use PhpParser\Node;
 use Robo\Common\IO;
@@ -23,6 +23,7 @@ use WPCoreBootstrap\DocumentationParser\Node\File;
 use WPCoreBootstrap\DocumentationParser\Node\Folder;
 use WPCoreBootstrap\DocumentationParser\Node\SubFolder;
 use WPCoreBootstrap\DocumentationParser\Node\RootFolder;
+use WPCoreBootstrap\DocumentationParser\Parser;
 
 /**
  * Class FilesystemParser.

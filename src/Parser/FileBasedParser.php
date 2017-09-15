@@ -11,11 +11,12 @@
  * @copyright 2017 Alain Schlesser, WordPress Core Bootstrap
  */
 
-namespace WPCoreBootstrap\DocumentationParser;
+namespace WPCoreBootstrap\DocumentationParser\Parser;
 
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
+use WPCoreBootstrap\DocumentationParser\Parser;
 use WPCoreBootstrap\DocumentationParser\Visitor\NodeConnector;
 
 /**
