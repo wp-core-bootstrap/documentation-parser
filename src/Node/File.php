@@ -31,7 +31,7 @@ class File extends NodeAbstract
      *
      * @since 0.1.0
      *
-     * @var string
+     * @var Node
      */
     public $name;
 
@@ -56,7 +56,7 @@ class File extends NodeAbstract
     {
         parent::__construct($attributes);
         $this->source = $source;
-        $this->name   = $name;
+        $this->name   = new Node\Name($name);
     }
 
     /**
@@ -66,6 +66,6 @@ class File extends NodeAbstract
      */
     public function getSubNodeNames()
     {
-        return ['source'];
+        return ['name', 'source'];
     }
 }

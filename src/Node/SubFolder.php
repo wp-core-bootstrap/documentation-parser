@@ -13,6 +13,8 @@
 
 namespace WPCoreBootstrap\DocumentationParser\Node;
 
+use PhpParser\Node\Name;
+
 /**
  * Class SubFolder.
  *
@@ -23,16 +25,6 @@ namespace WPCoreBootstrap\DocumentationParser\Node;
  */
 class SubFolder extends Folder
 {
-
-    /**
-     * Name of the sub-folder.
-     *
-     * @since 0.1.0
-     *
-     * @var string
-     */
-    public $name;
-
     /**
      * Instantiate a SubFolder object.
      *
@@ -44,6 +36,6 @@ class SubFolder extends Folder
     public function __construct(string $name, array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->name = $name;
+        $this->name = new Name($name);
     }
 }

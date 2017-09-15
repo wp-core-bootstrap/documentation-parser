@@ -95,8 +95,18 @@ final class FilesystemParser implements Parser, IOAwareInterface
         $rootFolder = new RootFolder($this->root);
 
         if (null !== $file) {
-            $ast = $this->parseFile($file);
-            $rootFolder->addFile(new File($file, $ast));
+            $ast       = $this->parseFile($file);
+            $hierarchy = explode('/', $file);
+            $folder    = $rootFolder;
+            $prefix    = '';
+            while (count($hierarchy) > 1) {
+                $subFolder = new SubFolder("{$prefix}{$hierarchy[0]}");
+                $folder->addFolder($subFolder);
+                $prefix = "{$prefix}{$hierarchy[0]}/";
+                array_shift($hierarchy);
+                $folder = $subFolder;
+            }
+            $folder->addFile(new File($file, $ast));
             return [$rootFolder];
         }
 

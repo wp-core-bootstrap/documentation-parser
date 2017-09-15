@@ -13,6 +13,7 @@
 
 namespace WPCoreBootstrap\DocumentationParser;
 
+use PhpParser\NodeDumper;
 use Robo\Tasks;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -71,6 +72,32 @@ final class Console extends Tasks
         $end = getrusage();
 
         $this->printTiming($start, $end);
+    }
+
+    /**
+     * Parse a single file and dump its abstract syntax tree.
+     *
+     * @since 0.1.0
+     *
+     * @param string $file File to parse.
+     */
+    public function parseFile(string $file)
+    {
+        $parser = new Parser\FilesystemParser(
+            self::SOURCE_ROOT,
+            new Parser\CachedParser(
+                self::SOURCE_ROOT,
+                self::CACHE_ROOT,
+                new Parser\FileBasedParser(self::SOURCE_ROOT)
+            ),
+            $this->output()
+        );
+
+        $ast = $parser->parse($file);
+
+        $dump = (new NodeDumper())->dump($ast);
+
+        $this->output()->write($dump, $newline = true);
     }
 
     /**

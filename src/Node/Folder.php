@@ -13,6 +13,7 @@
 
 namespace WPCoreBootstrap\DocumentationParser\Node;
 
+use PhpParser\Node;
 use PhpParser\NodeAbstract;
 
 /**
@@ -25,6 +26,15 @@ use PhpParser\NodeAbstract;
  */
 abstract class Folder extends NodeAbstract
 {
+    /**
+     * Name node.
+     *
+     * @since 0.1.0
+     *
+     * @var Node
+     */
+    public $name;
+
     /**
      * Folders attached to this filesystem.
      *
@@ -84,6 +94,6 @@ abstract class Folder extends NodeAbstract
      */
     public function getSubNodeNames()
     {
-        return ['folders', 'files'];
+        return ['name', 'folders', 'files'];
     }
 }

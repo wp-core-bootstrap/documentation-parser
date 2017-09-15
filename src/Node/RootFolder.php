@@ -13,6 +13,8 @@
 
 namespace WPCoreBootstrap\DocumentationParser\Node;
 
+use PhpParser\Node\Name;
+
 /**
  * Class RootFolder.
  *
@@ -25,15 +27,6 @@ class RootFolder extends Folder
 {
 
     /**
-     * Root that this folder represents.
-     *
-     * @since 0.1.0
-     *
-     * @var string
-     */
-    public $root;
-
-    /**
      * Instantiate a RootFolder object.
      *
      * @since 0.1.0
@@ -44,6 +37,6 @@ class RootFolder extends Folder
     public function __construct(string $root, array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->root = $root;
+        $this->name = new Name($root);
     }
 }
