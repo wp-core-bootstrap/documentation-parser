@@ -146,6 +146,9 @@ final class FilesystemParser implements Parser, IOAwareInterface
                 continue;
             }
             $file = $relativeFolder . $file->getFilename();
+            if (in_array($file, $this->getFileBlacklist(), true)) {
+                continue;
+            }
             $ast->addFile(new File($file, $this->parseFile($file)));
         }
 
@@ -214,6 +217,11 @@ final class FilesystemParser implements Parser, IOAwareInterface
      */
     private function getFileBlacklist()
     {
-        return [];
+        return [
+            'wp-admin/includes/class-pclzip.php',
+            'wp-admin/includes/class-ftp.php',
+            'wp-includes/class-json.php',
+            'wp-includes/class-simplepie.php',
+        ];
     }
 }
