@@ -15,7 +15,6 @@ namespace WPCoreBootstrap\DocumentationParser;
 
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 use WPCoreBootstrap\DocumentationParser\Visitor\NodeConnector;
 
@@ -67,34 +66,9 @@ final class FileBasedParser implements Parser
         $source = file_get_contents($this->root . $file);
         $parser = (new ParserFactory())->create(ParserFactory::ONLY_PHP5);
         $ast    = $parser->parse($source);
-        $ast    = $this->resolveNamespaces($ast);
         $ast    = $this->addConnections($ast);
         return $ast;
     }
-
-    /**
-     * Resolve relative namespaces into absolute namespaces.
-     *
-     * Probably without effect in WordPress for the time being.
-     *
-     * @since 0.1.0
-     *
-     * @param Node[] $ast Array of AST nodes.
-     *
-     * @return Node[] AST with resolved namespaces.
-     */
-    private function resolveNamespaces(array $ast): array
-    {
-        static $traverser = null;
-
-        if (null === $traverser) {
-            $traverser = new NodeTraverser();
-            $traverser->addVisitor(new NameResolver());
-        }
-
-        return $traverser->traverse($ast);
-    }
-
 
     /**
      * Add a connection to its parent to every node.
