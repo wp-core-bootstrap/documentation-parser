@@ -23,7 +23,7 @@ if (is_readable($autoload)) {
 
 $statusCode = Robo::run(
     $_SERVER['argv'],
-    [RoboFile::class],
+    [Console::class],
     'WordPress Core Bootstrap Documentation Parser',
     '0.1.0'
 );

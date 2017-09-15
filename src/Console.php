@@ -19,14 +19,14 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Class RoboFile.
+ * Class Console.
  *
  * @since   0.1.0
  *
  * @package WPCoreBootstrap\DocumentationParser
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-final class RoboFile extends Tasks
+final class Console extends Tasks
 {
     const SOURCE_ROOT = __DIR__ . '/../vendor/johnpbloch/wordpress-core/';
     const CACHE_ROOT = __DIR__ . '/../cache/';
