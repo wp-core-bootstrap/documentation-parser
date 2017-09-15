@@ -86,7 +86,7 @@ final class FileBasedParser implements Parser
 
         if (null === $traverser) {
             $traverser = new NodeTraverser();
-            $traverser->addVisitor(new NodeConnector(NodeConnector::STORE_NONE));
+            $traverser->addVisitor(new NodeConnector(NodeConnector::STORE_PARENT));
         }
 
         return $traverser->traverse($ast);
