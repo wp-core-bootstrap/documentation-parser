@@ -11,17 +11,29 @@
  * @copyright 2017 Alain Schlesser, WordPress Core Bootstrap
  */
 
-namespace WPCoreBootstrap\DocumentationParser\Entry;
+namespace WPCoreBootstrap\DocumentationParser;
+
+use PhpParser\Node;
 
 /**
- * Interface Entry.
+ * Interface Generator.
  *
  * @since   0.1.0
  *
- * @package WPCoreBootstrap\DocumentationParser\Entry
+ * @package WPCoreBootstrap\DocumentationParser
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-interface Entry
+interface Generator
 {
 
+    /**
+     * Generate the documentation for the given abstract syntax tree.
+     *
+     * @since 0.1.0
+     *
+     * @param Node[] $ast Array of abstract syntax tree nodes.
+     *
+     * @return void
+     */
+    public function generate(array $ast);
 }

@@ -14,6 +14,7 @@
 namespace WPCoreBootstrap\DocumentationParser\Entry;
 
 use PhpParser\Node;
+use PhpParser\PrettyPrinter;
 
 /**
  * Trait Value.
@@ -27,7 +28,7 @@ trait Value
 {
 
     /**
-     * Value node that the constant was set to.
+     * Value node that the entry was set to.
      *
      * @since 0.1.0
      *
@@ -57,11 +58,36 @@ trait Value
     public function renderValue(): string
     {
         $type = $this->value->getType();
-        switch ( $type ) {
+        switch ($type) {
+            case 'Expr_ConstFetch':
+                $prettyPrinter = new PrettyPrinter\Standard();
+                $typeString    = isset($this->value->name->parts[0])
+                && in_array($this->value->name->parts[0], ['true', 'false'], true)
+                    ? 'boolean'
+                    : 'constant';
+                return "{$typeString} `{$prettyPrinter->prettyPrintExpr($this->value)}`";
+            case 'Expr_UnaryMinus':
+                $prettyPrinter = new PrettyPrinter\Standard();
+                switch ($this->value->expr->getType()) {
+                    case 'Scalar_DNumber':
+                        $typeString = 'float ';
+                        break;
+                    case 'Scalar_LNumber':
+                        $typeString = 'integer ';
+                        break;
+                    default:
+                        $typeString = '';
+                }
+                return "{$typeString}`{$prettyPrinter->prettyPrintExpr($this->value)}`";
+            case 'Scalar_DNumber':
+                return "float `{$this->value->value}`";
+            case 'Scalar_LNumber':
+                return "integer `{$this->value->value}`";
             case 'Scalar_String':
-                return "string `\"{$this->value->value}\"`";
+                return "string `'{$this->value->value}'`";
             default:
-                return $type;
+                $prettyPrinter = new PrettyPrinter\Standard();
+                return "`{$prettyPrinter->prettyPrintExpr($this->value)}`";
         }
     }
 }

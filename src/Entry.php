@@ -11,29 +11,17 @@
  * @copyright 2017 Alain Schlesser, WordPress Core Bootstrap
  */
 
-namespace WPCoreBootstrap\DocumentationParser\Entry;
+namespace WPCoreBootstrap\DocumentationParser;
 
 /**
- * Class Constant.
+ * Interface Entry.
  *
  * @since   0.1.0
  *
- * @package WPCoreBootstrap\DocumentationParser\Entry
+ * @package WPCoreBootstrap\DocumentationParser
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-class Constant extends AbstractEntry implements HasName
+interface Entry
 {
-    use Name;
 
-    /**
-     * Instantiate a DefineConstant object.
-     *
-     * @since 0.1.0
-     *
-     * @param string $name Name of the defined constant.
-     */
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
 }

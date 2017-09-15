@@ -14,26 +14,21 @@
 namespace WPCoreBootstrap\DocumentationParser\Entry;
 
 /**
- * Class Constant.
+ * Interface HasName.
  *
  * @since   0.1.0
  *
  * @package WPCoreBootstrap\DocumentationParser\Entry
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-class Constant extends AbstractEntry implements HasName
+interface HasName
 {
-    use Name;
-
     /**
-     * Instantiate a DefineConstant object.
+     * Get the name.
      *
      * @since 0.1.0
      *
-     * @param string $name Name of the defined constant.
+     * @return string
      */
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
+    public function getName(): string;
 }

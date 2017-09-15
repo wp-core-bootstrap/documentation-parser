@@ -14,6 +14,7 @@
 namespace WPCoreBootstrap\DocumentationParser\Entry;
 
 use PhpParser\Comment\Doc;
+use WPCoreBootstrap\DocumentationParser\Entry;
 
 /**
  * Abstract class AbstractEntry.

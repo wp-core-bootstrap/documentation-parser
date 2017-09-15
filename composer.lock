@@ -425,12 +425,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/johnpbloch/wordpress-core.git",
-                "reference": "c8cfc94a52516a70115eded5b7370882af4e413f"
+                "reference": "b380048cc58bb3bc431f69c318fa478b38d32945"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/johnpbloch/wordpress-core/zipball/c8cfc94a52516a70115eded5b7370882af4e413f",
-                "reference": "c8cfc94a52516a70115eded5b7370882af4e413f",
+                "url": "https://api.github.com/repos/johnpbloch/wordpress-core/zipball/b380048cc58bb3bc431f69c318fa478b38d32945",
+                "reference": "b380048cc58bb3bc431f69c318fa478b38d32945",
                 "shasum": ""
             },
             "require": {
@@ -457,7 +457,7 @@
                 "cms",
                 "wordpress"
             ],
-            "time": "2017-09-12T07:17:15+00:00"
+            "time": "2017-09-15T11:32:08+00:00"
         },
         {
             "name": "league/container",

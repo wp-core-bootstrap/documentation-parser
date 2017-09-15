@@ -14,26 +14,34 @@
 namespace WPCoreBootstrap\DocumentationParser\Entry;
 
 /**
- * Class Constant.
+ * Trait Name.
  *
  * @since   0.1.0
  *
  * @package WPCoreBootstrap\DocumentationParser\Entry
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-class Constant extends AbstractEntry implements HasName
+trait Name
 {
-    use Name;
 
     /**
-     * Instantiate a DefineConstant object.
+     * Name of the entry.
      *
      * @since 0.1.0
      *
-     * @param string $name Name of the defined constant.
+     * @var string
      */
-    public function __construct(string $name)
+    public $name;
+
+    /**
+     * Get the name.
+     *
+     * @since 0.1.0
+     *
+     * @return string
+     */
+    public function getName(): string
     {
-        $this->name = $name;
+        return $this->name;
     }
 }
