@@ -13,48 +13,77 @@
 
 namespace WPCoreBootstrap\DocumentationParser\Node;
 
+use PhpParser\NodeAbstract;
+
 /**
- * Class Folder.
+ * Abstract class Folder.
  *
  * @since   0.1.0
  *
  * @package WPCoreBootstrap\DocumentationParser
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-class Folder extends FileSystem
+abstract class Folder extends NodeAbstract
 {
     /**
-     * Name of the folder.
+     * Folders attached to this filesystem.
      *
      * @since 0.1.0
      *
-     * @var string
+     * @var Folder[]
      */
-    public $name;
+    public $folders = [];
 
     /**
-     * Instantiate a Folder object.
+     * Files attached to this filesystem.
      *
      * @since 0.1.0
      *
-     * @param string $name Folder name.
-     * @param array  $attributes
+     * @var File[]
      */
-    public function __construct(string $name, array $attributes = [])
+    public $files = [];
+
+    /**
+     * Add a folder to the filesystem.
+     *
+     * @since 0.1.0
+     *
+     * @param Folder $folder Folder to add.
+     *
+     * @return Folder Modified folder.
+     */
+    public function addFolder(Folder $folder): Folder
     {
-        parent::__construct($attributes);
-        $this->name = $name;
+        $this->folders[] = $folder;
+
+        return $this;
     }
 
     /**
-     * Get the sub-node names that this node contains.
+     * Add a file to the filesystem.
      *
      * @since 0.1.0
      *
-     * @return array
+     * @param File $file File to add.
+     *
+     * @return Folder Modified folder.
      */
-    public function getSubNodeNames(): array
+    public function addFile(File $file): Folder
     {
-        return ['name'];
+        $this->files[] = $file;
+
+        return $this;
+    }
+
+    /**
+     * Gets the names of the sub nodes.
+     *
+     * @since 0.1.0
+     *
+     * @return array Names of sub nodes.
+     */
+    public function getSubNodeNames()
+    {
+        return ['folders', 'files'];
     }
 }

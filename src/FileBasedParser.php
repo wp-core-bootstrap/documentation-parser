@@ -14,7 +14,10 @@
 namespace WPCoreBootstrap\DocumentationParser;
 
 use PhpParser\Node;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
+use WPCoreBootstrap\DocumentationParser\Visitor\NodeConnector;
 
 /**
  * Class FileBasedParser.
@@ -51,15 +54,67 @@ final class FileBasedParser implements Parser
      *
      * @since 0.1.0
      *
-     * @param string $file Name (and relative path) of the file to parse.
+     * @param string $file Optional. Name (and relative path) of the file to parse.
      *
      * @return Node[] Array of abstract syntax tree nodes.
      */
-    public function parse(string $file): array
+    public function parse(string $file = null): array
     {
+        if (null === $file) {
+            return [];
+        }
+
         $source = file_get_contents($this->root . $file);
         $parser = (new ParserFactory())->create(ParserFactory::ONLY_PHP5);
-        return $parser->parse($source);
+        $ast    = $parser->parse($source);
+        $ast    = $this->resolveNamespaces($ast);
+        $ast    = $this->addConnections($ast);
+        return $ast;
+    }
+
+    /**
+     * Resolve relative namespaces into absolute namespaces.
+     *
+     * Probably without effect in WordPress for the time being.
+     *
+     * @since 0.1.0
+     *
+     * @param Node[] $ast Array of AST nodes.
+     *
+     * @return Node[] AST with resolved namespaces.
+     */
+    private function resolveNamespaces(array $ast): array
+    {
+        static $traverser = null;
+
+        if (null === $traverser) {
+            $traverser = new NodeTraverser();
+            $traverser->addVisitor(new NameResolver());
+        }
+
+        return $traverser->traverse($ast);
+    }
+
+
+    /**
+     * Add a connection to its parent to every node.
+     *
+     * @since 0.1.0
+     *
+     * @param Node[] $ast Array of AST nodes.
+     *
+     * @return Node[] AST with added parent connections.
+     */
+    private function addConnections(array $ast): array
+    {
+        static $traverser = null;
+
+        if (null === $traverser) {
+            $traverser = new NodeTraverser();
+            $traverser->addVisitor(new NodeConnector(NodeConnector::STORE_NONE));
+        }
+
+        return $traverser->traverse($ast);
     }
 
     /**

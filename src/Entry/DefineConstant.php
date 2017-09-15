@@ -11,19 +11,17 @@
  * @copyright 2017 Alain Schlesser, WordPress Core Bootstrap
  */
 
-namespace WPCoreBootstrap\DocumentationParser\Node;
-
-use PhpParser\NodeAbstract;
+namespace WPCoreBootstrap\DocumentationParser\Entry;
 
 /**
- * Abstract class FileSystem.
+ * Class DefineConstant.
  *
  * @since   0.1.0
  *
- * @package WPCoreBootstrap\DocumentationParser
+ * @package WPCoreBootstrap\DocumentationParser\Entry
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-abstract class FileSystem extends NodeAbstract
+final class DefineConstant extends Constant
 {
 
 }

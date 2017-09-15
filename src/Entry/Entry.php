@@ -1,5 +1,4 @@
-#!/usr/bin/env php
-<?php
+<?php declare(strict_types=1);
 /**
  * WordPress Core Bootstrap Documentation Parser.
  *
@@ -12,20 +11,17 @@
  * @copyright 2017 Alain Schlesser, WordPress Core Bootstrap
  */
 
-namespace WPCoreBootstrap\DocumentationParser;
+namespace WPCoreBootstrap\DocumentationParser\Entry;
 
-use Robo\Robo;
+/**
+ * Interface Entry.
+ *
+ * @since   0.1.0
+ *
+ * @package WPCoreBootstrap\DocumentationParser\Entry
+ * @author  Alain Schlesser <alain.schlesser@gmail.com>
+ */
+interface Entry
+{
 
-$autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
-if ( is_readable( $autoload ) ) {
-	require_once $autoload;
 }
-
-$statusCode = Robo::run(
-	$_SERVER['argv'],
-	[ RoboFile::class ],
-	'WordPress Core Bootstrap Documentation Parser',
-	'0.1.0'
-);
-
-exit( $statusCode );

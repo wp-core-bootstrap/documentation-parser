@@ -11,28 +11,39 @@
  * @copyright 2017 Alain Schlesser, WordPress Core Bootstrap
  */
 
-namespace WPCoreBootstrap\DocumentationParser;
-
-use PhpParser\Node;
+namespace WPCoreBootstrap\DocumentationParser\Node;
 
 /**
- * Interface Parser.
+ * Class RootFolder.
  *
  * @since   0.1.0
  *
  * @package WPCoreBootstrap\DocumentationParser
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-interface Parser
+class RootFolder extends Folder
 {
+
     /**
-     * Parse the code and return an array of AST trees.
+     * Root that this folder represents.
      *
      * @since 0.1.0
      *
-     * @param string $file Optional. Name (and relative path) of the file to parse.
-     *
-     * @return Node[] Array of abstract syntax tree nodes.
+     * @var string
      */
-    public function parse(string $file = null): array;
+    public $root;
+
+    /**
+     * Instantiate a RootFolder object.
+     *
+     * @since 0.1.0
+     *
+     * @param string $root Root that this folder represents.
+     * @param array  $attributes
+     */
+    public function __construct(string $root, array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->root = $root;
+    }
 }

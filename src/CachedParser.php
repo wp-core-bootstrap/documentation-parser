@@ -95,13 +95,17 @@ final class CachedParser implements Parser
      *
      * @since 0.1.0
      *
-     * @param string $file Name (and relative path) of the file to parse.
+     * @param string $file Optional. Name (and relative path) of the file to parse.
      *
      * @return Node[] Array of abstract syntax tree nodes.
      * @throws \RuntimeException If the file could not be read.
      */
-    public function parse(string $file): array
+    public function parse(string $file = null): array
     {
+        if (null === $file) {
+            return [];
+        }
+
         $hash = $this->getHash($file);
 
         if (! $this->hasCachedAST($file, $hash)) {

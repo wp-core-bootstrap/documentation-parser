@@ -11,28 +11,17 @@
  * @copyright 2017 Alain Schlesser, WordPress Core Bootstrap
  */
 
-namespace WPCoreBootstrap\DocumentationParser;
-
-use PhpParser\Node;
+namespace WPCoreBootstrap\DocumentationParser\Entry\Location;
 
 /**
- * Interface Parser.
+ * Class Usage.
  *
  * @since   0.1.0
  *
- * @package WPCoreBootstrap\DocumentationParser
+ * @package WPCoreBootstrap\DocumentationParser\Entry
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-interface Parser
+class Usage extends AbstractLocation
 {
-    /**
-     * Parse the code and return an array of AST trees.
-     *
-     * @since 0.1.0
-     *
-     * @param string $file Optional. Name (and relative path) of the file to parse.
-     *
-     * @return Node[] Array of abstract syntax tree nodes.
-     */
-    public function parse(string $file = null): array;
+
 }

@@ -13,11 +13,14 @@
 
 namespace WPCoreBootstrap\DocumentationParser;
 
+use PhpParser\Node;
+use PhpParser\NodeTraverser;
 use Robo\Tasks;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
+use WPCoreBootstrap\DocumentationParser\Entry;
+use WPCoreBootstrap\DocumentationParser\Visitor\ConstantCollector;
 
 /**
  * Class RoboFile.
@@ -31,42 +34,127 @@ final class RoboFile extends Tasks
 {
     const SOURCE_ROOT = __DIR__ . '/../vendor/johnpbloch/wordpress-core/';
     const CACHE_ROOT = __DIR__ . '/../cache/';
+    const SOURCE_LINK_ROOT = 'https://github.com/WordPress/WordPress/blob/master/';
 
     /**
      * Generates the documentation from the WordPress Core files
      *
      * @since 0.1.0
      *
+     * @param string $file Optional. File to parse.
+     *
      * @throws \InvalidArgumentException If the file names could not be processed.
      * @throws \RuntimeException If a file could not be parsed.
      */
-    public function docsGenerate()
+    public function docsGenerate(string $file = null)
     {
         $this->io()->title('Generating documentation');
 
         $start = getrusage();
 
-        $parser = new CachedParser(
+        $parser = new FilesystemParser(
             self::SOURCE_ROOT,
-            self::CACHE_ROOT,
-            new FileBasedParser(self::SOURCE_ROOT)
+            new CachedParser(
+                self::SOURCE_ROOT,
+                self::CACHE_ROOT,
+                new FileBasedParser(self::SOURCE_ROOT)
+            ),
+            $this->output()
         );
 
-        /** @var SplFileInfo[] $files */
-        $files = (new Finder())
-            ->in(self::SOURCE_ROOT)
-            ->name('*.php')
-            ->files();
+        $ast = $parser->parse($file);
 
-        foreach ($files as $file) {
-            $filePath = $file->getRelativePathname();
-            $this->say("Parsing file \"{$filePath}\"...");
-            $parser->parse($filePath);
-        }
+        $this->say('Collecting constants...');
+        $constants = $this->collectConstants($ast);
+
+        $this->say('Dumping constants into markdown file (constants.md)...');
+        file_put_contents('docs/constants.md', $this->dumpConstantsMarkdown($constants));
 
         $end = getrusage();
 
         $this->printTiming($start, $end);
+    }
+
+    /**
+     * Collect the constants used in a given abstract syntax tree.
+     *
+     * @since 0.1.0
+     *
+     * @param Node[] $ast Array of AST nodes.
+     *
+     * @return Node[]
+     */
+    private function collectConstants(array $ast)
+    {
+        static $traverser = null;
+        static $constantCollector = null;
+
+        if (null === $traverser) {
+            $traverser         = new NodeTraverser();
+            $constantCollector = new ConstantCollector();
+            $traverser->addVisitor($constantCollector);
+        }
+
+        $traverser->traverse($ast);
+
+        return $constantCollector->getConstants();
+    }
+
+    /**
+     * Dump a markdown file describing the constants.
+     *
+     * @since 0.1.0
+     *
+     * @param Node[] $constants Constants to describe.
+     *
+     * @return string Markdown document.
+     */
+    private function dumpConstantsMarkdown(array $constants)
+    {
+        $output = "# Constants\n";
+        foreach ($constants as $constant) {
+            /** @var Entry\Constant $constant */
+            $description = $constant->getShortDescription();
+            $output      .= sprintf(
+                "* **`%s`%s**\n\n",
+                $constant->name,
+                ! empty($description) ? " - {$description}" : ''
+            );
+
+            foreach ($constant->locations as $location) {
+                $output .= sprintf(
+                    "\t%s in [%s](%s) and set to %s\n\n",
+                    $location instanceof Entry\Location\Declaration ? 'Declared' : 'Used',
+                    $location->render(),
+                    $this->getSourceLink($location),
+                    $location->renderValue()
+                );
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * Get a link URL to the WordPress source files.
+     *
+     * @since 0.1.0
+     *
+     * @param Entry\Location $location Location to link to.
+     *
+     * @return string Link URL.
+     */
+    private function getSourceLink(Entry\Location $location): string
+    {
+        return sprintf(
+            '%s%s#%s',
+            self::SOURCE_LINK_ROOT,
+            $location->getFile(),
+            $location->getStartLine() === $location->getEndLine()
+                ? "L{$location->getStartLine()}"
+                : "L{$location->getStartLine()}-L{$location->getEndLine()}"
+
+        );
     }
 
     /**

@@ -11,28 +11,35 @@
  * @copyright 2017 Alain Schlesser, WordPress Core Bootstrap
  */
 
-namespace WPCoreBootstrap\DocumentationParser;
+namespace WPCoreBootstrap\DocumentationParser\Entry;
 
 use PhpParser\Node;
 
 /**
- * Interface Parser.
+ * Interface HasValue.
  *
  * @since   0.1.0
  *
- * @package WPCoreBootstrap\DocumentationParser
+ * @package WPCoreBootstrap\DocumentationParser\Entry
  * @author  Alain Schlesser <alain.schlesser@gmail.com>
  */
-interface Parser
+interface HasValue
 {
     /**
-     * Parse the code and return an array of AST trees.
+     * Get the value node.
      *
      * @since 0.1.0
      *
-     * @param string $file Optional. Name (and relative path) of the file to parse.
-     *
-     * @return Node[] Array of abstract syntax tree nodes.
+     * @return Node
      */
-    public function parse(string $file = null): array;
+    public function getValue(): Node;
+
+    /**
+     * Render the value node.
+     *
+     * @since 0.1.0
+     *
+     * @return string Rendered value.
+     */
+    public function renderValue(): string;
 }
