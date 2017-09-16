@@ -98,11 +98,20 @@ abstract class AbstractEntry implements Entry
         $descriptions = [];
         foreach ($this->comments as $comment) {
             $matches = [];
-            if (1 === preg_match('/(?:\/\*\*\s*)(?:\*\s*)*(?<short>.*?)(?:\s*\*\/)?(?:\n)/', $comment, $matches)) {
-                if (array_key_exists('short', $matches) && ! empty(trim($matches['short']))) {
-                    $descriptions[] = trim($matches['short']);
-                }
+            if (1 !== preg_match(
+                '/(?:\/\*\*\s*)(?:\*\s*)*(?<short>.*?)(?:(?:\s*\*\/)?(?:\n)|((?:\s*\*\/)))/',
+                $comment,
+                $matches
+            )) {
+                continue;
             }
+
+            if (! array_key_exists('short', $matches)
+                || empty(trim($matches['short']))) {
+                continue;
+            }
+
+            $descriptions[] = trim($matches['short']);
         }
 
         if (empty($descriptions)) {

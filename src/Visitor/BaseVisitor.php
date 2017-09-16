@@ -13,6 +13,7 @@
 
 namespace WPCoreBootstrap\DocumentationParser\Visitor;
 
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Expr;
 use PhpParser\NodeVisitorAbstract;
@@ -173,5 +174,27 @@ abstract class BaseVisitor extends NodeVisitorAbstract
     protected function isNamed(Node $node, string $name): bool
     {
         return $this->getName($node) === $name;
+    }
+
+    /**
+     * Return the doc-block of the parent element.
+     *
+     * @since 0.1.0
+     *
+     * @param Node $node Node to return the parent comment for.
+     *
+     * @return null|Doc Parent comment or null if none found.
+     */
+    protected function getParentComment(Node $node)
+    {
+        $parent = $node->getAttribute('parent');
+
+        if (! $parent instanceof Node\Stmt\If_) {
+            return null;
+        }
+
+        $comment = $parent->getDocComment();
+
+        return $comment instanceof Doc ? $comment : null;
     }
 }

@@ -13,6 +13,7 @@
 
 namespace WPCoreBootstrap\DocumentationParser\Visitor;
 
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use WPCoreBootstrap\DocumentationParser\Entry\Location;
 use WPCoreBootstrap\DocumentationParser\Entry;
@@ -114,7 +115,13 @@ final class ConstantCollector extends BaseVisitor
                 (int)$node->getAttribute('endLine', '-1'),
                 $value
             )
-        )->withComment($node->getDocComment());
+        );
+
+        $comment = $node->getDocComment() ?? $this->getParentComment($node);
+
+        if ($comment) {
+            $constant->withComment($comment);
+        }
 
         $this->constants[$name] = $constant;
     }
