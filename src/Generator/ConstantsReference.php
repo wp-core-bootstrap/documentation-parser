@@ -92,22 +92,39 @@ final class ConstantsReference extends AbstractGenerator
         $output = "# Constants\n";
         foreach ($constants as $constant) {
             /** @var Entry\Constant $constant */
-            $description = $constant->getShortDescription();
-            $output      .= sprintf(
-                "* **`%s`%s**\n\n",
-                $constant->name,
-                ! empty($description) ? " - {$description}" : ''
+            $output .= sprintf(
+                "### `%s`\n\n",
+                $constant->name
             );
 
-            foreach ($constant->locations as $location) {
-                $output .= sprintf(
-                    "\t%s in [%s](%s) and set to %s\n\n",
-                    $location instanceof Entry\Location\Declaration ? 'Declared' : 'Used',
-                    $location->render(),
-                    $this->getSourceLink($location),
-                    $location->renderValue()
-                );
+            $descriptions = $constant->getShortDescription();
+            if (! empty($descriptions)) {
+                $descriptions = explode(' | ', $descriptions);
+                foreach ($descriptions as $description) {
+                    $output .= sprintf(
+                        "%s\n\n",
+                        ! empty($description) ? "{$description}" : ''
+                    );
+                }
             }
+
+            if (! empty($constant->locations)) {
+                $output .= "<details>\n\n<summary>Usage references</summary>\n\n";
+
+                foreach ($constant->locations as $location) {
+                    $output .= sprintf(
+                        "%s in [%s](%s) and set to %s\n\n",
+                        $location instanceof Entry\Location\Declaration ? 'Declared' : 'Used',
+                        $location->render(),
+                        $this->getSourceLink($location),
+                        $location->renderValue()
+                    );
+                }
+
+                $output .= "</details>\n\n";
+            }
+
+            $output .= "---\n\n";
         }
 
         return $output;
