@@ -96,6 +96,13 @@ final class ConstantCollector extends BaseVisitor
             $this->addConstantEntry($entry, $location, $this->getComment($node));
         }
 
+        // <name>
+        if ($node instanceof Node\Expr\ConstFetch) {
+            $entry    = new Entry\Constant((string)$node->name);
+            $location = $this->createUsage($node);
+            $this->addConstantEntry($entry, $location);
+        }
+
         return parent::enterNode($node);
     }
 

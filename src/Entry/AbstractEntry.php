@@ -51,9 +51,9 @@ abstract class AbstractEntry implements Entry
      *
      * @param Location $location Location to add to the entry.
      *
-     * @return AbstractEntry
+     * @return Entry
      */
-    public function withLocation(Location $location): AbstractEntry
+    public function withLocation(Location $location): Entry
     {
         $this->locations[] = $location;
 
@@ -67,9 +67,9 @@ abstract class AbstractEntry implements Entry
      *
      * @param Doc|string $comment Comment to add to the entry.
      *
-     * @return AbstractEntry
+     * @return Entry
      */
-    public function withComment($comment): AbstractEntry
+    public function withComment($comment): Entry
     {
         if ($comment instanceof Doc) {
             $comment = $comment->getReformattedText();
@@ -99,10 +99,10 @@ abstract class AbstractEntry implements Entry
         foreach ($this->comments as $comment) {
             $matches = [];
             if (1 !== preg_match(
-                '/(?:\/\*\*\s*)(?:\*\s*)*(?<short>.*?)(?:(?:\s*\*\/)?(?:\n)|((?:\s*\*\/)))/',
-                $comment,
-                $matches
-            )) {
+                    '/(?:\/\*\*\s*)(?:\*\s*)*(?<short>.*?)(?:(?:\s*\*\/)?(?:\n)|((?:\s*\*\/)))/',
+                    $comment,
+                    $matches
+                )) {
                 continue;
             }
 

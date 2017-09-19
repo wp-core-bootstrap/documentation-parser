@@ -129,4 +129,57 @@ abstract class AbstractGenerator implements Generator, IOAwareInterface
             return 0;
         });
     }
+
+    /**
+     * Group sort the locations for entries.
+     *
+     * @since 0.1.0
+     *
+     * @param Entry[]    $entries    Array of entries to sort.
+     * @param array|null $requireKey Optional. Whether to require one of a set of keys to be present.
+     */
+    protected function groupSortLocations(array &$entries, array $requireKey = null)
+    {
+        array_map(function (&$entry) {
+            /** @var Entry\Constant $entry */
+            $entry->locations = $this->groupByLocationType($entry->locations);
+        }, $entries);
+
+        if ($requireKey) {
+            $entries = array_filter($entries, function ($entry) use ($requireKey) {
+                return ! empty(array_intersect($requireKey, array_keys($entry->locations)));
+            });
+        }
+
+        array_map(function (&$entry) {
+            /** @var Entry\Constant $entry */
+            $groups = $entry->locations;
+            array_map([$this, 'sortLocationsOnFile'], $groups);
+            $entry->locations = array_merge(... array_values($groups));
+        }, $entries);
+    }
+
+    /**
+     * Group the locations by location type.
+     *
+     * This will add another level in front of the current array, with the FQCN as index.
+     *
+     * @since 0.1.0
+     *
+     * @param Entry\Location[] $locations Array of locations.
+     *
+     * @return array Grouped array of locations.
+     */
+    protected function groupByLocationType(array $locations)
+    {
+        $groupedLocations = [];
+
+        array_map(function ($location) use (&$groupedLocations) {
+            $groupedLocations[get_class($location)][] = $location;
+        }, $locations);
+
+        ksort($groupedLocations);
+
+        return $groupedLocations;
+    }
 }

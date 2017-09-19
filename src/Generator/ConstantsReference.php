@@ -70,10 +70,7 @@ final class ConstantsReference extends AbstractGenerator
         $traverser->traverse($ast);
         $constants = $constantCollector->getConstants();
         $this->sortEntriesOnName($constants);
-        array_map(function ($constant) {
-            /** @var Entry\Constant $constant */
-            $this->sortLocationsOnFile($constant->locations);
-        }, $constants);
+        $this->groupSortLocations($constants, [Entry\Location\Declaration::class]);
 
         return $constants;
     }
@@ -109,19 +106,40 @@ final class ConstantsReference extends AbstractGenerator
             }
 
             if (! empty($constant->locations)) {
-                $output .= "<details>\n\n<summary>Usage references</summary>\n\n";
+                $declarations = array_filter($constant->locations, function ($location) {
+                    return $location instanceof Entry\Location\Declaration;
+                });
 
-                foreach ($constant->locations as $location) {
-                    $output .= sprintf(
-                        "%s in [%s](%s) and set to %s\n\n",
-                        $location instanceof Entry\Location\Declaration ? 'Declared' : 'Used',
-                        $location->render(),
-                        $this->getSourceLink($location),
-                        $location->renderValue()
-                    );
+                if (! empty($declarations)) {
+                    $output .= "<details>\n\n<summary>Declarations</summary>\n\n";
+                    foreach ($declarations as $declaration) {
+                        /** @var Entry\Location\Declaration $declaration */
+                        $output .= sprintf(
+                            "Declared in [%s](%s) and set to %s\n\n",
+                            $declaration->render(),
+                            $this->getSourceLink($declaration),
+                            $declaration->renderValue()
+                        );
+                    }
+                    $output .= "</details>\n\n";
                 }
 
-                $output .= "</details>\n\n";
+                $usages = array_filter($constant->locations, function ($location) {
+                    return $location instanceof Entry\Location\Usage;
+                });
+
+                if (! empty($usages)) {
+                    $output .= "<details>\n\n<summary>Usages</summary>\n\n";
+                    foreach ($usages as $usage) {
+                        /** @var Entry\Location\Usage $usage */
+                        $output .= sprintf(
+                            "Used in [%s](%s)\n\n",
+                            $usage->render(),
+                            $this->getSourceLink($usage)
+                        );
+                    }
+                    $output .= "</details>\n\n";
+                }
             }
 
             $output .= "---\n\n";

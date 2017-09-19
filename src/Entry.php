@@ -13,6 +13,8 @@
 
 namespace WPCoreBootstrap\DocumentationParser;
 
+use PhpParser\Comment\Doc;
+
 /**
  * Interface Entry.
  *
@@ -23,5 +25,34 @@ namespace WPCoreBootstrap\DocumentationParser;
  */
 interface Entry
 {
+    /**
+     * Add a reference to the source file to the entry.
+     *
+     * @since 0.1.0
+     *
+     * @param Entry\Location $location Location to add to the entry.
+     *
+     * @return Entry
+     */
+    public function withLocation(Entry\Location $location): Entry;
 
+    /**
+     * Add a comment block to the entry.
+     *
+     * @since 0.1.0
+     *
+     * @param Doc|string $comment Comment to add to the entry.
+     *
+     * @return Entry
+     */
+    public function withComment($comment): Entry;
+
+    /**
+     * Get the short description of the doc block.
+     *
+     * @since 0.1.0
+     *
+     * @return string
+     */
+    public function getShortDescription(): string;
 }
