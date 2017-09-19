@@ -13,7 +13,6 @@
 
 namespace WPCoreBootstrap\DocumentationParser\Visitor;
 
-use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use WPCoreBootstrap\DocumentationParser\Entry\Location;
 use WPCoreBootstrap\DocumentationParser\Entry;
