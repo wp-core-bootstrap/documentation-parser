@@ -13,6 +13,7 @@
 
 namespace WPCoreBootstrap\DocumentationParser\Visitor;
 
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use WPCoreBootstrap\DocumentationParser\Entry\Location;
 use WPCoreBootstrap\DocumentationParser\Entry;
@@ -73,8 +74,26 @@ final class ConstantCollector extends BaseVisitor
      */
     public function enterNode(Node $node)
     {
+        // define ( <name>, <value> )
         if ($result = $this->matchesFunction($node, 'define', 'name', 'value')) {
-            $this->addDefineConstantEntry($node, $this->getString($result['name']->value), $result['value']->value);
+            $entry    = new Entry\DefineConstant($this->getString($result['name']->value));
+            $location = $this->createDeclaration($node, $result['value']->value);
+            $this->addConstantEntry($entry, $location, $this->getComment($node));
+        }
+
+        // class <parent> { const <name> = <value>; }
+        if ($node instanceof Node\Stmt\ClassConst) {
+            $name = $node->consts[0]->name;
+
+            $parent = $node->getAttribute('parent');
+            if ($parent && $parent instanceof Node\Stmt\Class_) {
+                $name = "{$parent->name}::{$name}";
+            }
+
+            $entry    = new Entry\ConstConstant($name);
+            $location = $this->createDeclaration($node, $node->consts[0]->value);
+
+            $this->addConstantEntry($entry, $location, $this->getComment($node));
         }
 
         return parent::enterNode($node);
@@ -93,35 +112,64 @@ final class ConstantCollector extends BaseVisitor
     }
 
     /**
-     * Add DefineConstant entry.
+     * Add constant entry.
      *
      * @since 0.1.0
      *
-     * @param Node   $node  Node to parse.
-     * @param string $name  Name of the constant.
-     * @param Node   $value Value node.
+     * @param Entry    $entry    Entry to be added as a constant.
+     * @param Location $location Location that the constant was found in.
+     * @param Doc      $comment  Comment to attach to the entry.
      */
-    private function addDefineConstantEntry(Node $node, string $name, Node $value)
+    private function addConstantEntry(Entry $entry, Location $location, Doc $comment = null)
     {
-        $constant = array_key_exists($name, $this->constants)
-            ? $this->constants[$name]
-            : new Entry\DefineConstant($name);
+        $constant = array_key_exists($entry->getName(), $this->constants)
+            ? $this->constants[$entry->getName()]
+            : $entry;
 
-        $constant = $constant->withLocation(
-            new Location\Declaration(
-                $this->file,
-                (int)$node->getAttribute('startLine', '-1'),
-                (int)$node->getAttribute('endLine', '-1'),
-                $value
-            )
-        );
-
-        $comment = $node->getDocComment() ?? $this->getParentComment($node);
+        $constant = $constant->withLocation($location);
 
         if ($comment) {
-            $constant->withComment($comment);
+            $constant = $constant->withComment($comment);
         }
 
-        $this->constants[$name] = $constant;
+        $this->constants[$constant->getName()] = $constant;
+    }
+
+    /**
+     * Create a new Declaration location.
+     *
+     * @since 0.1.0
+     *
+     * @param Node $node  Node to create the Declaration location for.
+     * @param Node $value Value used in the declaration.
+     *
+     * @return Location\Declaration
+     */
+    private function createDeclaration(Node $node, Node $value)
+    {
+        return new Location\Declaration(
+            $this->file,
+            (int)$node->getAttribute('startLine', '-1'),
+            (int)$node->getAttribute('endLine', '-1'),
+            $value
+        );
+    }
+
+    /**
+     * Create a new Usage location.
+     *
+     * @since 0.1.0
+     *
+     * @param Node $node Node to create the Usage location for.
+     *
+     * @return Location\Usage
+     */
+    private function createUsage(Node $node)
+    {
+        return new Location\Usage(
+            $this->file,
+            (int)$node->getAttribute('startLine', '-1'),
+            (int)$node->getAttribute('endLine', '-1')
+        );
     }
 }

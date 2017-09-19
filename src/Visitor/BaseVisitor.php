@@ -197,4 +197,18 @@ abstract class BaseVisitor extends NodeVisitorAbstract
 
         return $comment instanceof Doc ? $comment : null;
     }
+
+    /**
+     * Get the comment for a given node.
+     *
+     * @since 0.1.0
+     *
+     * @param Node $node Node to get the comment for.
+     *
+     * @return null|Doc Comment or null if none found.
+     */
+    protected function getComment(Node $node)
+    {
+        return $node->getDocComment() ?? $this->getParentComment($node);
+    }
 }
